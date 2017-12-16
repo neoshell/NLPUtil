@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.neoshell.nlp.core";
+option java_outer_classname = "NLPUtilProto";
+option objc_class_prefix = "NLPU";
+
+package com.neoshell.nlp.core;
+
+message WordInfo {
+  string word = 1;
+  int64 count = 2;
+  double score = 3;
+}
+
+message NLPContext {
+  // The score in WordInfo represents word frequency.
+  // The more frequent the word appears globally, the lower the score is.
+  // Used for computing keywords.
+  map<string, WordInfo> global_word_stats = 1;
+  
+  // The scores in globalWordStats depend on the number of all words
+  // (num_all_words). If a word is not in the map, we need to use num_all_words
+  // to compute a comparable score.
+  int64 num_all_words = 2;
+}

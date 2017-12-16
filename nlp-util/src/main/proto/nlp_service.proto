@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.neoshell.nlp.grpc";
+option java_outer_classname = "NLPUtilProto";
+option objc_class_prefix = "NLPU";
+
+package com.neoshell.nlp.grpc;
+
+import "message_analysis_util_data.proto";
+import "nlp_util_data.proto";
+
+service NLPUtil {
+  // Generates NLP context object based on word count.
+  rpc GenerateNLPContext(GenerateNLPContextRequest)
+      returns (GenerateNLPContextReply);
+
+  // Conducts segmentation on a list of texts.
+  rpc Segment(SegmentRequest) returns (SegmentReply);
+
+  // Checks if a word is stop word.
+  rpc IsStopWord(IsStopWordRequest) returns (IsStopWordReply);
+
+  // Given a list of words, removes stop words.
+  rpc RemoveStopWords(RemoveStopWordsRequest) returns (RemoveStopWordsReply);
+
+  // Given a list of texts, counts the number of each word.
+  rpc CountWords(CountWordsRequest) returns (CountWordsReply);
+
+  // Given a list of words, computes keywords with scores.
+  rpc GetKeywordInfo(GetKeywordInfoRequest) returns (GetKeywordInfoReply);
+}
+
+service MessageAnalysisUtil {
+  // Clusters related messages and computes keywords.
+  rpc MergeMessagesAndComputeKeywords(MergeMessagesAndComputeKeywordsRequest)
+      returns (MergeMessagesAndComputeKeywordsReply);
+}
+
+message GenerateNLPContextRequest {
+  map<string, int64> global_word_count = 1;
+}
+
+message GenerateNLPContextReply {
+  com.neoshell.nlp.core.NLPContext nlp_context = 1;
+}
+
+message SegmentRequest {
+  repeated string text = 1;
+}
+
+message SegmentReply {
+  repeated string word = 1;
+}
+
+message IsStopWordRequest {
+  string word = 1;
+}
+
+message IsStopWordReply {
+  bool is_stop_word = 1;
+}
+
+message RemoveStopWordsRequest {
+  repeated string word = 1;
+}
+
+message RemoveStopWordsReply {
+  repeated string word = 1;
+}
+
+message CountWordsRequest {
+  repeated string text = 1;
+  bool count_stop_words = 2;
+  int32 limit = 3;
+}
+
+message CountWordsReply {
+  // Sorted by count in descending order.
+  repeated com.neoshell.nlp.core.WordInfo word_count = 1;
+}
+
+message GetKeywordInfoRequest {
+  repeated string word = 1;
+  com.neoshell.nlp.core.NLPContext nlp_context = 2;
+  int32 limit = 3;
+}
+
+message GetKeywordInfoReply {
+  repeated com.neoshell.nlp.core.WordInfo keyword_info = 1;
+}
+
+message MergeMessagesAndComputeKeywordsRequest {
+  repeated com.neoshell.nlp.messaging.Message message = 1;
+  com.neoshell.nlp.messaging.MessageAnalysisContext context = 2;
+}
+
+message MergeMessagesAndComputeKeywordsReply {
+  repeated com.neoshell.nlp.messaging.Conversation conversation = 1;
+}
